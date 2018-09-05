@@ -10,7 +10,8 @@ int main(int argc, char const *argv[])
     auto dt = elf_t::toStringA(t);
 
     std::cout << dt << std::endl;
-    std::cout << elf_t::toStringA(elf_t::now_t()) << std::endl;
+    auto t1 = elf_t::now_t();
+    std::cout << elf_t::toStringA(t1) << std::endl;
 
     std::cout << elf_t::toStringA(elf_t::now_tt()) << std::endl;
 
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[])
 
     std::wcout << elf_t::timeW() << std::endl;
 
-    std::wcerr << elf_t::time() << std::endl;
+    std::cerr << elf_t::time() << std::endl;
 
     std::cin.get();
     return 0;

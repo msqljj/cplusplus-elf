@@ -59,7 +59,7 @@ namespace elf
 #define time timeW
 #define toString toStringW
 #else
-#define time timeW
+#define time timeA
 #define toString toStringA
 #endif
 
@@ -164,11 +164,13 @@ COMMON
 public:
   static std::string timeA(const char * const pattern = nullptr)
   {
-    return toStringA(now_t(), pattern);
+    auto t = now_t();
+    return toStringA(t, pattern);
   }
   static std::wstring timeW(const wchar_t * const pattern = nullptr)
   {
-    return toStringW(now_t(), pattern);
+    auto t = now_t();
+    return toStringW(t, pattern);
   }
 
   static std::string toStringA(struct tm & t, const  char * const pattern = nullptr) 
@@ -205,7 +207,7 @@ public:
     if (0 == size)
     {
       dt = std::wstring(48, '\0');
-      auto size = wcsftime(const_cast<wchar_t *>(dt.data()),
+      wcsftime(const_cast<wchar_t *>(dt.data()),
         48,
         nullptr == pattern ? DATE_TIME_NORMAL_W : pattern,
         &t);
@@ -215,7 +217,8 @@ public:
   static std::wstring toStringW(std::time_t tt, const wchar_t * const pattern = nullptr)
   {
     //TODO
-    return toStringW(toT(tt), pattern);
+    auto t = toT(tt);
+    return toStringW(t, pattern);
 
   }
 
