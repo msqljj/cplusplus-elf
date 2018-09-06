@@ -59,13 +59,13 @@ namespace elf
 #define COMMON
 #define DT
 
-#ifdef UNICODE
+/*#ifdef UNICODE
 #define time timeW
 #define toString toStringW
 #else
 #define time timeA
 #define toString toStringA
-#endif
+#endif*/
 
 
   class Time
@@ -81,7 +81,7 @@ namespace elf
   public:
     static struct tm parse_t(IN const std::string & dt, IN const char * const  pat = nullptr)
     {
-      std::tm t = { 0 };
+      struct tm t = { 0 };
 #if defined(_WIN32) && defined(_MSC_VER)
       msvc_elf::strptime_msvc(dt.c_str(), nullptr == pat ? DT_PAT_N_A : pat, &t);
 #else
@@ -97,48 +97,48 @@ namespace elf
       return tt;
     }
 
-    static std::string minA(IN const char * const pat = nullptr)
+    static std::string min(IN const char * const pat = nullptr)
     {
-      return toStringA(min_t(nullptr), pat);
+      return toString(min_t(nullptr), pat);
     }
 
-    static std::string minA(IN const struct tm & t, IN const char * const  pat = nullptr)
+    static std::string min(IN const struct tm & t, IN const char * const  pat = nullptr)
     {
       auto t0 = min_t(&t);
-      return toStringA(t0, pat);
+      return toString(t0, pat);
     }
 
-    static std::wstring minW(IN const wchar_t * const pat = nullptr)
+    static std::wstring min_w(IN const wchar_t * const pat = nullptr)
     {
-      return toStringW(min_t(nullptr), pat);
+      return toWstring(min_t(nullptr), pat);
     }
 
-    static std::wstring minW(IN const struct tm & t, IN const wchar_t * const  pat = nullptr)
+    static std::wstring min_w(IN const struct tm & t, IN const wchar_t * const  pat = nullptr)
     {
       auto t0 = min_t(&t);
-      return toStringW(t0, pat);
+      return toWstring(t0, pat);
     }
 
-    static std::string maxA(IN const char * const pat = nullptr)
+    static std::string max(IN const char * const pat = nullptr)
     {
-      return toStringA(max_t(nullptr), pat);
+      return toString(max_t(nullptr), pat);
     }
 
-    static std::string maxA(IN const struct tm & t, IN const char * const  pat = nullptr)
-    {
-      auto t0 = max_t(&t);
-      return toStringA(t0, pat);
-    }
-
-    static std::wstring maxW(IN const wchar_t * const pat = nullptr)
-    {
-      return toStringW(max_t(nullptr), pat);
-    }
-
-    static std::wstring maxW(IN const struct tm & t, IN const wchar_t * const  pat = nullptr)
+    static std::string max(IN const struct tm & t, IN const char * const  pat = nullptr)
     {
       auto t0 = max_t(&t);
-      return toStringW(t0, pat);
+      return toString(t0, pat);
+    }
+
+    static std::wstring max_w(IN const wchar_t * const pat = nullptr)
+    {
+      return toWstring(max_t(nullptr), pat);
+    }
+
+    static std::wstring max_w(IN const struct tm & t, const wchar_t * const  pat = nullptr)
+    {
+      auto t0 = max_t(&t);
+      return toWstring(t0, pat);
     }
 
 /*****************************************************************************************/
@@ -182,36 +182,36 @@ namespace elf
       return v;
     }
 
-    static std::string tidyA(IN const char * const  pat = nullptr)
+    static std::string tidy(IN const char * const  pat = nullptr)
     {
       auto t = now_t();
       t.tm_min = 0;
       t.tm_sec = 0;
-      auto dt = toStringA(t, pat);
+      auto dt = toString(t, pat);
       return dt;
     }
 
-    static std::wstring tidyW(IN const wchar_t * const  pat = nullptr)
+    static std::wstring tidy_w(IN const wchar_t * const  pat = nullptr)
     {
       auto t = now_t();
       t.tm_min = 0;
       t.tm_sec = 0;
-      auto dt = toStringW(t, pat);
+      auto dt = toWstring(t, pat);
       return dt;
     }
 
-    static std::string timeA(IN const char * const pat = nullptr)
+    static std::string time(IN const char * const pat = nullptr)
     {
       auto t = now_t();
-      return toStringA(t, pat);
+      return toString(t, pat);
     }
     static std::wstring timeW(IN const wchar_t * const pat = nullptr)
     {
       auto t = now_t();
-      return toStringW(t, pat);
+      return toWstring(t, pat);
     }
 
-    static std::string toStringA(IN const struct tm & t, IN const  char * const pat = nullptr)
+    static std::string toString(IN const struct tm & t, IN const  char * const pat = nullptr)
     {
       std::string dt(24, '\0');
       auto size = strftime(const_cast<char *>(dt.data()),
@@ -228,13 +228,13 @@ namespace elf
       }
       return dt;
     }
-    static std::string toStringA(IN std::time_t tt, IN const char * const pat = nullptr)
+    static std::string toString(IN std::time_t tt, IN const char * const pat = nullptr)
     {
       auto t = toT(tt);
-      return toStringA(t, pat);
+      return toString(t, pat);
     }
 
-    static std::wstring toStringW(IN const struct tm & t, IN const wchar_t * const  pat = nullptr)
+    static std::wstring toWstring(IN const struct tm & t, IN const wchar_t * const  pat = nullptr)
     {
       //TODO
       std::wstring dt(24, '\0');
@@ -252,11 +252,11 @@ namespace elf
       }
       return dt;
     }
-    static std::wstring toStringW(IN std::time_t tt, IN const wchar_t * const pat = nullptr)
+    static std::wstring toWstring(IN std::time_t tt, IN const wchar_t * const pat = nullptr)
     {
       //TODO
       auto t = toT(tt);
-      return toStringW(t, pat);
+      return toWstring(t, pat);
 
     }
 /*****************************************************************************************/
