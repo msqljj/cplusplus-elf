@@ -1,35 +1,59 @@
 #include <iostream>
 //#include <chrono>
 #include <algorithm>
-#include "hpp/Time.hpp"
+#include "hpp/time.hpp"
 //#define _MSC_VER 8
 
 int main(int argc, char const *argv[])
 {
-   std::cout << elf_t::now_tt() << std::endl;
-    auto t = elf_t::now_t();
-    auto dt = elf_t::toStringA(t);
+   UN_USED(argc)
+    UN_USED(argv)
 
-    std::cout << dt << std::endl;
-    std::cout << elf_t::toStringA(elf_t::now_t()) << std::endl;
+    /**
+        %Y year
+        %m month
+        %d day
+        %H hour
+        %M minute
+        %S second
+    */
+    std::cout << "date time now test : " << std::endl;
+    std::cout << "\tdate_time_normal_pat : " << elf_t::timeA() << std::endl;
+    std::cout << "\tdate_time_tiny_pat : " << elf_t::timeA("%Y%m%d%H%M%S") << std::endl;
+    std::cout << "\tstd::time_t time stamp : " << elf_t::now_tt() << std::endl;
+    std::cout << "\tstruct tm time stamp : " << elf_t::toStringA(elf_t::now_t()) << std::endl;
+    std::cout << std::endl;
 
-    std::cout << elf_t::toStringA(elf_t::now_tt()) << std::endl;
+    std::cout << "date time parse test: " << std::endl;
+    std::string dt0("2018-01-29 11:22:33");
+    auto t0 = elf_t::parse_t(dt0);
+    auto tt0 = elf_t::parse_tt(dt0);
+    std::cout << "\tstruct tm parse from \"" << dt0 << "\" : " << elf_t::toStringA(t0) << std::endl;
+    std::cout << "\tstd::time_t parse from \"" << dt0 << "\" : " << tt0 << std::endl;
+    std::cout << std::endl;
 
-    std::cout << elf_t::timeA() << std::endl;
 
-    std::wcout << elf_t::timeW() << std::endl;
-
-    std::wcerr << elf_t::time() << std::endl;
-
-    std::cout << elf_t::tidyA() << std::endl;
-    std::wcout << elf_t::tidyW() << std::endl;
-
-    std::cout << "______________________________________" << std::endl;
-    std::vector<struct tm> v = elf_t::listTidyHours(10);
-    std::for_each(v.cbegin(), v.cend(), [](const tm & t) ->void{
-        struct tm r = t;
-        std::cout <<  "list tidy hours " <<  elf_t::toStringA(r) << std::endl;
+    std::cout << "list past years month days hours minutes second test : " << std::endl;
+    auto past = 3;
+    std::vector<struct tm> v_past = elf_t::pastHours(past);
+    std::for_each(v_past.cbegin(), v_past.cend(), [past](const tm & t) ->void {
+        std::cout << "\tpast " << past << " hours " << elf_t::toStringA(const_cast<struct tm &>(t)) << std::endl;
     });
+
+    std::vector<struct tm> v_tidy_past = elf_t::pastTidyHours(past);
+    std::for_each(v_tidy_past.cbegin(), v_tidy_past.cend(), [past](const tm & t) ->void {
+        std::cout << "\tpast " << past << " tidy hours " << elf_t::toStringA(const_cast<struct tm &>(t)) << std::endl;
+    });
+    std::cout << std::endl;
+
+
+    std::cout << "date time calculate test :" << std::endl;
+    std::string dt1("2018-01-29 11:22:33");
+    auto t1 = elf_t::parse_t(dt1);
+    auto t2 = elf_t::plusHours_t(t1, 10);
+    std::cout << "\tdate time : " << dt1 << " plus " << 10 << " hours is : " << elf_t::toStringA(t2) << std::endl;
+    std::cout << "\tdate time : " << dt1 << " plus " << -20 << " hours is : " << elf_t::toStringA(elf_t::plusHours_t(elf_t::parse_t(dt1), -20)) << std::endl;
+    std::cout << std::endl;
 
     std::cin.get();
     return 0;

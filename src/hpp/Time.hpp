@@ -10,7 +10,7 @@
 #include <vector>
 
 #if defined(_WIN32) && defined(_MSC_VER)
-#include "Time_MSVC.hpp"
+#include "time_msvc.hpp"
 #elif __APPLE__
 
 #elif __linux__
@@ -26,6 +26,9 @@
 #define OUT
 #endif
 
+#ifndef UN_USED(x)
+#define UN_USED(x) (void)x;
+#endif
 
 
 #define elf_t elf::Time
@@ -37,19 +40,21 @@ t  -> struct tm
 ts -> time_stamp
 dt -> date_time
 pat -> pattern
+
+DT_PAT_N date time pattern normal
 */
 
 namespace elf
 {
-  typedef std::chrono::duration<int, std::ratio<1 * 60 * 60 * 24>> day_t;
-  typedef std::chrono::duration<int, std::ratio<1 * 60 * 60>> hour_t;
+  typedef std::chrono::duration<int, std::ratio<1 * 60 * 60 * 24, 1>> day_t;
+  typedef std::chrono::duration<int, std::ratio<1 * 60 * 60, 1>> hour_t;
   typedef std::chrono::duration<int, std::ratio<1 * 60, 1>> minute_t;
   typedef std::chrono::duration<int, std::ratio<1, 1>> second_t;
   typedef std::chrono::duration<int, std::ratio<1, 1000>> milli_t;
   typedef std::chrono::duration<int, std::ratio<1, 1000000>> mirco_t;
   typedef std::chrono::duration<int, std::ratio<1, 1000000000>> nano_t;
-  extern const auto DATE_TIME_NORMAL_A = "%Y-%m-%d %H:%M:%S";
-  extern const auto DATE_TIME_NORMAL_W = L"%Y-%m-%d %H:%M:%S";
+  extern const auto DT_PAT_N_A = "%Y-%m-%d %H:%M:%S";
+  extern const auto DT_PAT_N_W = L"%Y-%m-%d %H:%M:%S";
 
 
 #define TIME_T
@@ -92,20 +97,20 @@ namespace elf
     {
       std::string date_time(24, '\0');
       auto time_stamp = now_tt();
-      tm t = {};
+      struct tm t = { 0 };
 #if defined(_WIN32) && defined(_MSC_VER)
       localtime_s(&t, &time_stamp);
 #else
       localtime_r(&time_stamp, &t);
 #endif
-      return c_str(t);
+      return c_str(t, pat);
     }
 
     static std::tm parse(const std::string &date_time, const char *const pat = nullptr)
     {
       std::tm t = { 0 };
 #if defined(_WIN32) && defined(_MSC_VER)
-      msvc_elf::strptime_msvc(date_time.c_str(), nullptr == pat ? DATE_TIME_NORMAL_A : pat, &t);
+      msvc_elf::strptime_msvc(date_time.c_str(), nullptr == pat ? DT_PAT_N_A : pat, &t);
 #else
       strptime(date_time.c_str(), nullptr == pat ? DATE_TIME_NORMAL_A : pat, &t);
 #endif
@@ -150,14 +155,14 @@ namespace elf
       std::string date_time(24, '\0');
       std::size_t size = std::strftime(const_cast<char *>(date_time.data()),
         24,
-        nullptr == pat ? DATE_TIME_NORMAL_A : pat,
+        nullptr == pat ? DT_PAT_N_A : pat,
         &t);
       if (0 != size)
       {
         date_time = std::string(size + 1, '\0');
         std::strftime(const_cast<char *>(date_time.data()),
           size,
-          nullptr == pat ? DATE_TIME_NORMAL_A : pat,
+          nullptr == pat ? DT_PAT_N_A : pat,
           &t);
       }
       return date_time;
@@ -165,25 +170,63 @@ namespace elf
 /*****************************************************************************************/
     DT
   public:
+    static struct tm parse_t(IN const std::string & dt, IN const char * const  pat = nullptr)
+    {
+      std::tm t = { 0 };
+#if defined(_WIN32) && defined(_MSC_VER)
+      msvc_elf::strptime_msvc(dt.c_str(), nullptr == pat ? DT_PAT_N_A : pat, &t);
+#else
+      strptime(date_time.c_str(), nullptr == pat ? DT_PAT_N_A : pat, &t);
+#endif
+      return t;
+    }
+
+    static std::time_t parse_tt(IN const std::string & dt, IN const char * const  pat = nullptr)
+    {
+      auto t = parse_t(dt, pat);
+      auto tt = toTt(t);
+      return tt;
+    }
 
 /*****************************************************************************************/
     COMMON
   public:
-    static std::vector<struct tm> listTidyHours(IN int latest, struct tm * pt = nullptr)
+    static std::vector<struct tm> pastTidyHours(IN int past, IN struct tm * pt = nullptr)
     {
       std::vector<struct tm> v;
-      if (0 == latest)
+      if (0 == past){
+        v.push_back(tidy_t());
         return v;
+      }
       struct tm t = tidy_t(pt);
-      int differ = latest > 0 ? latest : -latest;
-      bool before = latest > 0;
+      int differ = past > 0 ? past : -past;
+      bool before = past > 0;
       for (int index = 0; index < differ; ++index)
       {
         //
-        v.push_back(plusHours_t(t, before ? index - latest + 1 : index)); //keep order
+        v.push_back(plusHours_t(t, before ? index - past + 1 : index)); //keep order
       }
       return v;
     }
+
+    static std::vector<struct tm> pastHours(IN int past, IN struct tm * pt = nullptr)
+    {
+      std::vector<struct tm> v;
+      if (0 == past){
+        v.push_back(now_t());
+        return v;
+      }
+      struct tm & t = nullptr == pt ? now_t() : *pt;
+      int differ = past > 0 ? past : -past;
+      bool before = past > 0;
+      for (int index = 0; index < differ; ++index)
+      {
+        //
+        v.push_back(plusHours_t(t, before ? index - past + 1 : index)); //keep order
+      }
+      return v;
+    }
+
     static std::string tidyA(IN const char * const  pat = nullptr)
     {
       auto t = now_t();
@@ -218,14 +261,14 @@ namespace elf
       std::string dt(24, '\0');
       auto size = strftime(const_cast<char *>(dt.data()),
         24,
-        nullptr == pat ? DATE_TIME_NORMAL_A : pat,
+        nullptr == pat ? DT_PAT_N_A : pat,
         &t);
       if (0 == size)
       {
         dt = std::string(48, '\0');
         strftime(const_cast<char *>(dt.data()),
           48,
-          nullptr == pat ? DATE_TIME_NORMAL_A : pat,
+          nullptr == pat ? DT_PAT_N_A : pat,
           &t);
       }
       return dt;
@@ -242,14 +285,14 @@ namespace elf
       std::wstring dt(24, '\0');
       auto size = wcsftime(const_cast<wchar_t *>(dt.data()),
         24,
-        nullptr == pat ? DATE_TIME_NORMAL_W : pat,
+        nullptr == pat ? DT_PAT_N_W : pat,
         &t);
       if (0 == size)
       {
         dt = std::wstring(48, '\0');
         wcsftime(const_cast<wchar_t *>(dt.data()),
           48,
-          nullptr == pat ? DATE_TIME_NORMAL_W : pat,
+          nullptr == pat ? DT_PAT_N_W : pat,
           &t);
       }
       return dt;
@@ -281,18 +324,12 @@ namespace elf
       return mktime(&t);
     }
 
+    /** keep memcpy away*/
     inline static struct tm tidy_t(struct tm * pt = nullptr) {
       struct tm * ptr = nullptr == pt ? &(now_t()) : pt;
-      struct tm t = { 0 };
-      t.tm_hour = ptr->tm_hour;
-      t.tm_isdst = ptr->tm_isdst;
-      t.tm_mday = ptr->tm_mday;
-      t.tm_min = ptr->tm_min;
-      t.tm_mon = ptr->tm_mon;
-      t.tm_sec = ptr->tm_sec;
-      t.tm_wday = ptr->tm_wday;
-      t.tm_yday = ptr->tm_yday;
-      t.tm_year = ptr->tm_year;
+      struct tm t = *ptr;
+      t.tm_min = 0;
+      t.tm_sec = 0;
       return t;
     }
 
@@ -300,7 +337,7 @@ namespace elf
       if (0 == hoursToAdd)
         return t;
       auto tt = toTt(t);
-      tt += std::chrono::seconds(hoursToAdd * 60 * 60 * 1).count();
+      tt += std::chrono::duration_cast<second_t>(hour_t(hoursToAdd)).count();// std::chrono::seconds(hoursToAdd * 60 * 60 * 1).count();
       return toT(tt);
     }
 /*****************************************************************************************/
