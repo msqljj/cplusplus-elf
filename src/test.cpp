@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
     std::cout << std::endl;
     auto end = std::chrono::steady_clock::now();
     
-    std::cout << "cost time : " << std::chrono::duration_cast<elf::milli_t>(elf::nano_t(end - start)).count() << std::endl;
+    std::cout << "cost time : " << std::chrono::duration_cast<elf::milli_t>(elf::nano_t(end - start)).count() << " milliseconds"<< std::endl << std::endl;
 
     std::cin.get();
     return 0;
