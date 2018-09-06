@@ -17,6 +17,7 @@ int main(int argc, char const *argv[])
         %M minute
         %S second
     */
+    auto start = std::chrono::steady_clock::now();
     std::cout << "date time now test : " << std::endl;
     std::cout << "\tdate_time_normal_pat : " << elf_t::timeA() << std::endl;
     std::cout << "\tdate_time_tiny_pat : " << elf_t::timeA("%Y%m%d%H%M%S") << std::endl;
@@ -53,7 +54,18 @@ int main(int argc, char const *argv[])
     auto t2 = elf_t::plusHours_t(t1, 10);
     std::cout << "\tdate time : " << dt1 << " plus " << 10 << " hours is : " << elf_t::toStringA(t2) << std::endl;
     std::cout << "\tdate time : " << dt1 << " plus " << -20 << " hours is : " << elf_t::toStringA(elf_t::plusHours_t(elf_t::parse_t(dt1), -20)) << std::endl;
+    std::cout << "\tnow min : " << elf_t::toStringA(elf_t::min_t()) << std::endl;
+    std::cout << "\tnow max : " << elf_t::toStringA(elf_t::max_t()) << std::endl;
+
+    std::cout << "\tnow min auto : " << elf_t::minA() << std::endl;
+    std::cout << "\tnow max auto : " << elf_t::maxA() << std::endl;
+
+    std::cout << "\tdate time : " << dt1 << " min : " << elf_t::minA(t1) << std::endl;
+    std::cout << "\tdate time : " << dt1 << " max : " << elf_t::maxA(t1) << std::endl;
     std::cout << std::endl;
+    auto end = std::chrono::steady_clock::now();
+    
+    std::cout << "cost time : " << std::chrono::duration_cast<elf::milli_t>(elf::nano_t(end - start)).count() << std::endl;
 
     std::cin.get();
     return 0;

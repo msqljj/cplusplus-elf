@@ -9,8 +9,8 @@
 ## Modules
 * [time]()
 
-	- TimeParser
-	- TimeToString
-	- ListLatestLocalDate
-	- ListLatestLocalDateTime
+	- time parser
+	- time to string
+	- time to time-stamp
+	- time plus seconds minutes days 
 	- .etc	
