@@ -292,7 +292,7 @@ namespace elf
     */
     inline static std::time_t toTt(IN const struct tm & t)
     {
-      return mktime(&(const_cast<struct tm &>(t)));
+      return mktime(const_cast<struct tm *>(&t));
     }
 
     /** keep memcpy away*/
