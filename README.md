@@ -139,6 +139,7 @@
 
 
 ***gone***
+
 	static std::vector<T> gone_days/mins/secs(int days/mins/secs, const char * const pat = nullptr);
 	static std::vector<T> gone_days/mins/secs(int days/mins/secs, const struct tm & t, const char * const pat = nullptr);
 	static std::vector<T> gone_days/mins/secs(int days/mins/secs, const  std::time_t tt, const char * const pat = nullptr);
