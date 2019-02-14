@@ -1,6 +1,6 @@
 # time library with c++11 or above
 
-[时间库](https://github.com/zhangyebai/cplusplus-elf/elf/README.md)
+[时间库](https://github.com/zhangyebai/cplusplus-elf/elf/)
 
 	1. C++ 11
 	2. header only
@@ -11,7 +11,7 @@
 	7. template keep api alike
 
 # thread pool library with c++11 or above
-[线程池库](https://github.com/zhangyebai/cplusplus-elf/thread-pool/README.md)
+[线程池库](https://github.com/zhangyebai/cplusplus-elf/thread-pool/)
     
     1.C++ 11
     2.header only
