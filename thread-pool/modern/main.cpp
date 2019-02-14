@@ -7,6 +7,7 @@
 
 int main(int argc, char** argv){
     ThreadPool pool(4);
+    pool.start();
     std::default_random_engine rd;
     std::uniform_int_distribution<int> rang(100, 1000);
     for(int idx = 0; idx < 20; ++idx){

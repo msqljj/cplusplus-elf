@@ -21,7 +21,20 @@ class ThreadPool{
 public:
     ThreadPool(int core, int max = 0, int cache = 0): core(core),//由于max和cache暂时没用到,因此赋值0
                     max(max), cache(cache), quit(false), force(false){
-        for(auto idx = 0; idx < core; ++idx){
+        
+    }  
+    ~ThreadPool(){
+        this->quit.store(true);
+        this->enable.notify_all();
+        std::for_each(this->pool.begin(), this->pool.end(), [](std::thread & t){
+            if(t.joinable()){
+                t.join();
+            }
+        });
+    }
+public:
+    void start(){
+for(auto idx = 0; idx < core; ++idx){
             pool.push_back(std::thread([this](){
                 // 第一次退出,判断是否要强制退出
                 bool quit = this->force.load() ? this->quit.load() : false;
@@ -41,19 +54,7 @@ public:
                 }
             }));
         }
-    }  
-
-    ~ThreadPool(){
-        this->quit.store(true);
-        this->enable.notify_all();
-        std::for_each(this->pool.begin(), this->pool.end(), [](std::thread & t){
-            if(t.joinable()){
-                t.join();
-            }
-        });
     }
-public:
-
     void shutdown(bool force = false){
         this->quit.store(true);
         this->force.store(force);
