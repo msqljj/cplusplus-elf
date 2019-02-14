@@ -39,3 +39,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+*.json
+thread-pool/modern/out/test
+*.plist
+thread-pool/modern/out/test.dSYM/Contents/Resources/DWARF/test
