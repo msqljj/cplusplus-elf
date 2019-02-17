@@ -16,3 +16,10 @@
     1.C++ 11
     2.header only
     
+
+# macOS linux等*nix like系统设置进程名
+[set proc title](https://github.com/zhangyebai/cplusplus-elf/tree/master/process-name/)
+
+    1.从redis中学来的
+	2.用c++11重写的
+	3.header only
